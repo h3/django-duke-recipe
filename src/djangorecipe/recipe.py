@@ -117,8 +117,7 @@ class Recipe(object):
         options.setdefault('settings', 'settings')
 
         options.setdefault('urlconf', options['project'] + '.urls')
-        options.setdefault(
-            'media_root',
+        options.setdefault('media_root',
             "os.path.join(os.path.dirname(__file__), 'media')")
         # Set this so the rest of the recipe can expect the values to be
         # there. We need to make sure that both pythonpath and extra-paths are
@@ -129,21 +128,14 @@ class Recipe(object):
             options.setdefault('extra-paths', options.get('pythonpath', ''))
 
         # Useful when using archived versions
-        buildout['buildout'].setdefault(
-            'download-cache',
+        buildout['buildout'].setdefault('download-cache',
             os.path.join(buildout['buildout']['directory'],
                          'downloads'))
 
         # mod_wsgi support script
         options.setdefault('wsgi', 'false')
         options.setdefault('fcgi', 'false')
-        options.setdefault('wsgilog', '')
         options.setdefault('logfile', '')
-
-        # only try to download stuff if we aren't asked to install from cache
-        self.install_from_cache = self.buildout['buildout'].get(
-            'install-from-cache', '').strip() == 'true'
-
 
     def install(self):
         location = self.options['location']
