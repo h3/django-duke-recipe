@@ -14,3 +14,4 @@ setuptools_bzr-1.2-py2.6.egg
 .pydevproject
 .DS_Store
 *.pyc
+*.swp
