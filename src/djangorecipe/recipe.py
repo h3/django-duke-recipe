@@ -11,7 +11,7 @@ import zc.recipe.egg
 import setuptools
 
 script_template = {
-    'wsgi': '''
+    'wsgi': """
 
 %(relative_paths_setup)s
 import sys
@@ -34,45 +34,30 @@ sys.path[0:0] = [
 import %(module_name)s
 
 %(module_name)s.%(attrs)s(%(arguments)s)
-'''
+"""
 }
 
 
-settings_template = '''
+settings_template = """
 import os
 
-ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
-)
+MANAGERS = ADMINS = ()
 
-MANAGERS = ADMINS
-
-DATABASE_ENGINE = 'sqlite3'    # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = '%(project)s.db'
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'project.db',
+    }
+}
 
 TIME_ZONE = 'America/Chicago'
-
 LANGUAGE_CODE = 'en-us'
+SITE_ID = 1
 
-# Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
+ADMIN_MEDIA_PREFIX = '/admin_media/'
 MEDIA_ROOT = %(media_root)s
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/media/'
 
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/admin_media/'
-
-# Don't share this with anybody.
 SECRET_KEY = '%(secret)s'
 
 MIDDLEWARE_CLASSES = (
@@ -84,12 +69,12 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = '%(urlconf)s'
 
-
 INSTALLED_APPS = (
+    'django.contrib.admin',
+    'django.contrib.admindocs',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.admin',
 )
 
 TEMPLATE_LOADERS = (
@@ -100,40 +85,23 @@ TEMPLATE_LOADERS = (
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), "templates"),
 )
+"""
 
-
-'''
-
-production_settings = '''
-from %(project)s.settings import *
-'''
-
-development_settings = '''
-from %(project)s.settings import *
-DEBUG=True
-TEMPLATE_DEBUG=DEBUG
-'''
-
-urls_template = '''
-from django.conf.urls.defaults import patterns, include, handler500
+urls_template = """
+from django.conf.urls.defaults import *
 from django.conf import settings
 from django.contrib import admin
+
 admin.autodiscover()
 
-handler500 # Pyflakes
 
-urlpatterns = patterns(
-    '',
-    (r'^admin/(.*)', admin.site.root),
+urlpatterns = patterns('',
+    (r'^admin/', include(admin.site.urls)),
     (r'^accounts/login/$', 'django.contrib.auth.views.login'),
+    (r'^media/(?P<path>.*)$', 'django.views.static.serve', 
+      {'document_root': settings.MEDIA_ROOT}),
 )
-
-if settings.DEBUG:
-    urlpatterns += patterns('',
-        (r'^media/(?P<path>.*)$', 'django.views.static.serve', 
-         {'document_root': settings.MEDIA_ROOT}),
-    )
-'''
+"""
 
 class Recipe(object):
     def __init__(self, buildout, name, options):
@@ -146,7 +114,7 @@ class Recipe(object):
         options['bin-directory'] = buildout['buildout']['bin-directory']
 
         options.setdefault('project', 'project')
-        options.setdefault('settings', 'development')
+        options.setdefault('settings', 'settings')
 
         options.setdefault('urlconf', options['project'] + '.urls')
         options.setdefault(
@@ -160,7 +128,7 @@ class Recipe(object):
         else:
             options.setdefault('extra-paths', options.get('pythonpath', ''))
 
-        # Usefull when using archived versions
+        # Useful when using archived versions
         buildout['buildout'].setdefault(
             'download-cache',
             os.path.join(buildout['buildout']['directory'],
@@ -361,10 +329,7 @@ class Recipe(object):
               'djangorecipe.manage', 'main')],
             ws, self.options['executable'], self.options['bin-directory'],
             extra_paths = extra_paths,
-            arguments= "'%s.%s'" % (project,
-                                    self.options['settings']))
-
-
+            arguments= "'%s.%s'" % (project, self.options['settings']))
 
     def create_test_runner(self, extra_paths, working_set):
         apps = self.options.get('test', '').split()
@@ -381,20 +346,11 @@ class Recipe(object):
                     self.options['settings'],
                     ', '.join(["'%s'" % app for app in apps])))
 
-
     def create_project(self, project_dir):
         os.makedirs(project_dir)
 
         template_vars = {'secret': self.generate_secret()}
         template_vars.update(self.options)
-
-        self.create_file(
-            os.path.join(project_dir, 'development.py'),
-            development_settings, template_vars)
-
-        self.create_file(
-            os.path.join(project_dir, 'production.py'),
-            production_settings, template_vars)
 
         self.create_file(
             os.path.join(project_dir, 'urls.py'),
@@ -404,8 +360,7 @@ class Recipe(object):
             os.path.join(project_dir, 'settings.py'),
             settings_template, template_vars)
 
-        # Create the media and templates directories for our
-        # project
+        # Create the media and templates directories for our project
         os.mkdir(os.path.join(project_dir, 'media'))
         os.mkdir(os.path.join(project_dir, 'templates'))
 
