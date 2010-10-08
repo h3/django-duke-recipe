@@ -245,41 +245,14 @@ class Recipe(object):
     def install_git_version(self, version, download_dir, location,
                             install_from_cache):
         git_url = self.git_to_url()
-        download_location = os.path.join(download_dir, 'django-git')
-        archive_location = 'django-git-archive/'
-        archive_file = 'django-git.tar'
-        if not install_from_cache:
-            if os.path.exists(download_location):
-                if self.git_update(download_location):
-                    raise UserError(
-                        "Failed to update Django; %s. "
-                        "Please check your internet connection." % (
-                            download_location))
-            else:
-                self.log.info("Checking out Django from git: %s" % git_url)
-                cmd = 'git clone --depth 1 %s %s' % (git_url, download_location)
-                if not self.buildout['buildout'].get('verbosity'):
-                    cmd += ' -q'
-                self.log.info("Cloning with: %s" % cmd)
-                if self.command(cmd):
-                    raise UserError("Failed to clone Django. "
-                                    "Please check your internet connection.")
-            orig_cwd=os.getcwd()
-            os.chdir(download_location)
-            cmd = 'git archive --format=tar --prefix=%s --output=%s %s' % (
-                archive_location, archive_file, version)
-            self.log.info("archiving with: %s" % cmd)
-            if self.command(cmd):
-                raise UserError("Failed to create Django archive from Git repo.")
 
-            cmd = "tar -xf %s" % archive_file
-            if self.command(cmd):
-                raise UserError("Unable to unarchive Django archive from Git repo.")
-            os.chdir(orig_cwd)
+        if os.path.exists(location):
+            self.git_update(location)
         else:
-            self.log.info("Installing Django from previously cloned Git repo: " + download_location)
-
-        shutil.copytree(os.path.join(download_location, archive_location), location)
+            self.log.info("Checking out Django from git: %s" % git_url)
+            cmd = 'git clone %s %s' % (git_url, location)
+            self.log.info("Cloning with: %s" % cmd)
+            self.command(cmd)
 
     def git_to_url(self):
         if self.options['git'] == 'true':
