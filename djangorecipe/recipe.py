@@ -57,23 +57,18 @@ class Recipe(object):
         project_dir = os.path.join(base_dir, self.options['project'])
 
         version = self.options['version']
-        # Remove a pre-existing installation if it is there
-        if os.path.exists(location):
-            shutil.rmtree(location)
 
         self.install_git_version(version, location)
 
         extra_paths = [os.path.join(location), base_dir]
         pythonpath = [p.replace('/', os.path.sep) for p in
                       self.options['extra-paths'].splitlines() if p.strip()]
+
         extra_paths.extend(pythonpath)
         requirements, ws = self.egg.working_set(['djangorecipe'])
 
         # Create the Django management script
         self.create_manage_script(extra_paths, ws)
-
-        # Create the test runner
-        self.create_test_runner(extra_paths, ws)
 
         # Make the wsgi and fastcgi scripts if enabled
         self.make_scripts(extra_paths, ws)
@@ -122,21 +117,6 @@ class Recipe(object):
             ws, self.options['executable'], self.options['bin-directory'],
             extra_paths = extra_paths,
             arguments= "'%s.%s'" % (project, self.options['settings']))
-
-    def create_test_runner(self, extra_paths, working_set):
-        apps = self.options.get('test', '').split()
-        # Only create the testrunner if the user requests it
-        if apps:
-            zc.buildout.easy_install.scripts(
-                [(self.options.get('testrunner', 'test'),
-                  'djangorecipe.test', 'main')],
-                working_set, self.options['executable'],
-                self.options['bin-directory'],
-                extra_paths = extra_paths,
-                arguments= "'%s.%s', %s" % (
-                    self.options['project'],
-                    self.options['settings'],
-                    ', '.join(["'%s'" % app for app in apps])))
 
     def create_project(self, project_dir):
         os.makedirs(project_dir)
