@@ -5,8 +5,9 @@ import subprocess
 import shutil
 
 from zc.recipe.egg import Egg
+import zc.buildout.easy_install
 
-logger = logging.getLogger(__path__)
+logger = logging.getLogger(__name__)
 
 
 DIR = os.path.dirname(__file__)
