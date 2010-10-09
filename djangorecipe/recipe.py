@@ -38,7 +38,7 @@ import %(module_name)s
 }
 
 
-settings_template = """
+SETTINGS_TEMPLATE = """
 import os
 
 MANAGERS = ADMINS = ()
@@ -87,7 +87,7 @@ TEMPLATE_DIRS = (
 )
 """
 
-urls_template = """
+URLS_TEMPLATE = """
 from django.conf.urls.defaults import *
 from django.conf import settings
 from django.contrib import admin
@@ -241,13 +241,11 @@ class Recipe(object):
         template_vars = {'secret': self.generate_secret()}
         template_vars.update(self.options)
 
-        self.create_file(
-            os.path.join(project_dir, 'urls.py'),
-            urls_template, template_vars)
+        self.create_file(os.path.join(project_dir, 'urls.py'),
+            URLS_TEMPLATE, template_vars)
 
-        self.create_file(
-            os.path.join(project_dir, 'settings.py'),
-            settings_template, template_vars)
+        self.create_file(os.path.join(project_dir, 'settings.py'),
+            SETTINGS_TEMPLATE, template_vars)
 
         # Create the media and templates directories for our project
         os.mkdir(os.path.join(project_dir, 'media'))
