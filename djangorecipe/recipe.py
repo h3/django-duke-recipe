@@ -10,100 +10,22 @@ from zc.buildout import UserError
 import zc.recipe.egg
 import setuptools
 
-script_template = {
-    'wsgi': """
-
-%(relative_paths_setup)s
-import sys
-sys.path[0:0] = [
-  %(path)s,
-  ]
-%(initialization)s
-import %(module_name)s
-
-application = %(module_name)s.%(attrs)s(%(arguments)s)
-""",
-    'fcgi': """
-
-%(relative_paths_setup)s
-import sys
-sys.path[0:0] = [
-  %(path)s,
-  ]
-%(initialization)s
-import %(module_name)s
-
-%(module_name)s.%(attrs)s(%(arguments)s)
-"""
-}
 
 
-SETTINGS_TEMPLATE = """
-import os
-
-MANAGERS = ADMINS = ()
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'project.db',
-    }
-}
-
-TIME_ZONE = 'America/Chicago'
-LANGUAGE_CODE = 'en-us'
-SITE_ID = 1
-
-ADMIN_MEDIA_PREFIX = '/admin_media/'
-MEDIA_ROOT = %(media_root)s
-MEDIA_URL = '/media/'
-
-SECRET_KEY = '%(secret)s'
-
-MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.middleware.doc.XViewMiddleware',
+DIR = os.path.dirname(__file__)
+WSGI_TEMPLATE = "\n".join(
+    open(os.path.join(DIR, "application.wsgi")).readlines()
+)
+SETTINGS_TEMPLATE = "\n".join(
+    open(os.path.join(DIR, "settings.py")).readlines()
+)
+URLS_TEMPLATE = "\n".join(
+    open(os.path.join(DIR, "urls.py")).readlines()
 )
 
-ROOT_URLCONF = '%(urlconf)s'
-
-INSTALLED_APPS = (
-    'django.contrib.admin',
-    'django.contrib.admindocs',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-)
-
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.load_template_source',
-    'django.template.loaders.app_directories.load_template_source',
-)
-
-TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(__file__), "templates"),
-)
-"""
-
-URLS_TEMPLATE = """
-from django.conf.urls.defaults import *
-from django.conf import settings
-from django.contrib import admin
-
-admin.autodiscover()
-
-
-urlpatterns = patterns('',
-    (r'^admin/', include(admin.site.urls)),
-    (r'^accounts/login/$', 'django.contrib.auth.views.login'),
-    (r'^media/(?P<path>.*)$', 'django.views.static.serve', 
-      {'document_root': settings.MEDIA_ROOT}),
-)
-"""
 
 class Recipe(object):
+
     def __init__(self, buildout, name, options):
         self.log = logging.getLogger(name)
         self.egg = zc.recipe.egg.Egg(buildout, options['recipe'], options)
@@ -260,8 +182,7 @@ class Recipe(object):
         _script_template = zc.buildout.easy_install.script_template
         for protocol in ('wsgi', 'fcgi'):
             zc.buildout.easy_install.script_template = \
-                zc.buildout.easy_install.script_header + \
-                    script_template[protocol]
+                zc.buildout.easy_install.script_header + WSGI_TEMPLATE
             if self.options.get(protocol, '').lower() == 'true':
                 project = self.options.get('projectegg',
                                            self.options['project'])
