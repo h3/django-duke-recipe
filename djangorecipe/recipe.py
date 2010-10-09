@@ -110,13 +110,12 @@ class Recipe(object):
         os.chdir(orig_cwd)
 
     def create_manage_script(self, extra_paths, ws):
-        project = self.options.get('projectegg', self.options['project'])
         zc.buildout.easy_install.scripts(
-            [(self.options.get('control-script', self.name),
-              'djangorecipe.manage', 'main')],
+            [(self.name, 'djangorecipe.manage', 'main')],
             ws, self.options['executable'], self.options['bin-directory'],
             extra_paths = extra_paths,
-            arguments= "'%s.%s'" % (project, self.options['settings']))
+            arguments= "'%s.%s'" % (self.options['project'],
+                self.options['settings']))
 
     def create_project(self, project_dir):
         os.makedirs(project_dir)
@@ -140,23 +139,23 @@ class Recipe(object):
         open(os.path.join(project_dir, '__init__.py'), 'w').close()
 
     def make_scripts(self, extra_paths, ws):
+        # The scripts function uses a script_template variable hardcoded
+        # in Buildout to generate the script file. Since the wsgi file
+        # needs to create a callable application function rather than call
+        # a script, monkeypatch the script template here.
         _script_template = zc.buildout.easy_install.script_template
-        for protocol in ('wsgi', 'fcgi'):
-            zc.buildout.easy_install.script_template = \
-                zc.buildout.easy_install.script_header + WSGI_TEMPLATE
-            if self.options.get(protocol, '').lower() == 'true':
-                project = self.options.get('projectegg',
-                                           self.options['project'])
-                zc.buildout.easy_install.scripts(
-                    [('%s.%s' % (self.options.get('control-script', self.name),
-                                protocol),
-                      'djangorecipe.%s' % protocol, 'main')],
-                    ws,
-                    self.options['executable'], 
-                    self.options['bin-directory'],extra_paths = extra_paths,
-                    arguments= "'%s.%s', logfile='%s'" % (
-                        project, self.options['settings'],
-                        self.options.get('logfile')))
+
+        zc.buildout.easy_install.script_template = \
+            zc.buildout.easy_install.script_header + WSGI_TEMPLATE
+
+        zc.buildout.easy_install.scripts(
+            [('%s.wsgi' % self.name, 'djangorecipe.wsgi', 'main')],
+            ws, self.options['executable'], 
+            self.options['bin-directory'], extra_paths = extra_paths,
+            arguments= "'%s.%s'" % (self.options["project"],
+                self.options['settings'])
+        )
+
         zc.buildout.easy_install.script_template = _script_template
 
     def update(self):
