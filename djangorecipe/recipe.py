@@ -4,8 +4,9 @@ import os
 import subprocess
 import shutil
 
-import zc.recipe.egg
+from zc.recipe.egg import Egg
 
+logger = logging.getLogger(__path__)
 
 
 DIR = os.path.dirname(__file__)
@@ -23,95 +24,48 @@ URLS_TEMPLATE = "\n".join(
 class Recipe(object):
 
     def __init__(self, buildout, name, options):
-        self.log = logging.getLogger(name)
-        self.egg = zc.recipe.egg.Egg(buildout, options['recipe'], options)
-
         self.buildout, self.name, self.options = buildout, name, options
-        options['location'] = os.path.join(
-            buildout['buildout']['parts-directory'], name)
-        options['bin-directory'] = buildout['buildout']['bin-directory']
+        self.egg = Egg(buildout, options['recipe'], options)
 
+        options.setdefault('bin-directory',
+            buildout['buildout']['bin-directory'])
         options.setdefault('project', 'project')
         options.setdefault('settings', 'settings')
-
         options.setdefault('urlconf', options['project'] + '.urls')
         options.setdefault('media_root',
             "os.path.join(os.path.dirname(__file__), 'media')")
-        # Set this so the rest of the recipe can expect the values to be
-        # there. We need to make sure that both pythonpath and extra-paths are
-        # set for BBB.
-        if 'extra-paths' in options:
-            options['pythonpath'] = options['extra-paths']
-        else:
-            options.setdefault('extra-paths', options.get('pythonpath', ''))
-
-        # mod_wsgi support script
-        options.setdefault('wsgi', 'false')
-        options.setdefault('fcgi', 'false')
-        options.setdefault('logfile', '')
+        options.setdefault('extra-paths', '')
+        options.setdefault('script-name',  name)
 
     def install(self):
-        location = self.options['location']
         base_dir = self.buildout['buildout']['directory']
-
         project_dir = os.path.join(base_dir, self.options['project'])
 
-        version = self.options['version']
+        extra_paths = [base_dir]
+        extra_paths.extend([p.replace('/', os.path.sep) for p in
+            self.options['extra-paths'].splitlines() if p.strip()])
 
-        self.install_git_version(version, location)
-
-        extra_paths = [os.path.join(location), base_dir]
-        pythonpath = [p.replace('/', os.path.sep) for p in
-                      self.options['extra-paths'].splitlines() if p.strip()]
-
-        extra_paths.extend(pythonpath)
         requirements, ws = self.egg.working_set(['djangorecipe'])
 
+        scripts = []
+
         # Create the Django management script
-        self.create_manage_script(extra_paths, ws)
+        scripts.extend(self.create_manage_script(extra_paths, ws))
 
         # Make the wsgi and fastcgi scripts if enabled
-        self.make_scripts(extra_paths, ws)
+        scripts.extend(self.make_scripts(extra_paths, ws))
 
-        # Create default settings if we haven't got a project
-        # egg specified, and if it doesn't already exist
-        if not self.options.get('projectegg'):
-            if not os.path.exists(project_dir):
-                self.create_project(project_dir)
-            else:
-                self.log.info(
-                    'Skipping creating of project: %(project)s since '
-                    'it exists' % self.options)
-
-        return location
-
-    def install_git_version(self, version, location):
-        git_url = self.git_to_url()
-
-        if os.path.exists(location):
-            self.git_update(location)
+        if not os.path.exists(project_dir):
+            self.create_project(project_dir)
         else:
-            self.log.info("Checking out Django from git: %s" % git_url)
-            cmd = 'git clone %s %s' % (git_url, location)
-            self.log.info("Cloning with: %s" % cmd)
-            self.command(cmd)
+            logger.info('Skipping creating of project: %(project)s since '
+                'it exists' % self.options)
 
-    def git_to_url(self):
-        return self.options.get("repository",
-            "git://github.com/django/django.git")
-
-    def git_update(self, location):
-        orig_cwd = os.getcwd()
-        os.chdir(location)
-        cmd = "git pull origin"
-        if not self.buildout['buildout'].get('verbosity'):
-            cmd += ' -q'
-        self.command(cmd)
-        os.chdir(orig_cwd)
+        return scripts
 
     def create_manage_script(self, extra_paths, ws):
-        zc.buildout.easy_install.scripts(
-            [(self.name, 'djangorecipe.manage', 'main')],
+        return zc.buildout.easy_install.scripts(
+            [(self.options['script-name'], 'djangorecipe.manage', 'main')],
             ws, self.options['executable'], self.options['bin-directory'],
             extra_paths = extra_paths,
             arguments= "'%s.%s'" % (self.options['project'],
@@ -133,9 +87,7 @@ class Recipe(object):
         os.mkdir(os.path.join(project_dir, 'media'))
         os.mkdir(os.path.join(project_dir, 'templates'))
 
-        # Make the settings dir a Python package so that Django
-        # can load the settings from it. It will act like the
-        # project dir.
+        # Add __init__.py to the project directory
         open(os.path.join(project_dir, '__init__.py'), 'w').close()
 
     def make_scripts(self, extra_paths, ws):
@@ -148,8 +100,9 @@ class Recipe(object):
         zc.buildout.easy_install.script_template = \
             zc.buildout.easy_install.script_header + WSGI_TEMPLATE
 
-        zc.buildout.easy_install.scripts(
-            [('%s.wsgi' % self.name, 'djangorecipe.wsgi', 'main')],
+        generated = zc.buildout.easy_install.scripts(
+            [('%s.wsgi' % self.options['script-name'], 'djangorecipe.wsgi',
+                'main')],
             ws, self.options['executable'], 
             self.options['bin-directory'], extra_paths = extra_paths,
             arguments= "'%s.%s'" % (self.options["project"],
@@ -158,15 +111,16 @@ class Recipe(object):
 
         zc.buildout.easy_install.script_template = _script_template
 
+        return generated
+
     def update(self):
-        newest = self.buildout['buildout'].get('newest') != 'false'
+        self.install()
 
     def command(self, cmd, **kwargs):
         output = subprocess.PIPE
         if self.buildout['buildout'].get('verbosity'):
             output = None
-        command = subprocess.Popen(
-            cmd, shell=True, stdout=output, **kwargs)
+        command = subprocess.Popen(cmd, shell=True, stdout=output, **kwargs)
         return command.wait()
 
     def create_file(self, file, template, options):
