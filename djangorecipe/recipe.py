@@ -35,7 +35,8 @@ class Recipe(object):
         options.setdefault('urlconf', options['project'] + '.urls')
         options.setdefault('media_root',
             "os.path.join(os.path.dirname(__file__), 'media')")
-        options.setdefault('extra-paths', '')
+        options.setdefault('extra-paths',
+            buildout["buildout"].get('extra-paths', ''))
         options.setdefault('script-name',  name)
 
     def install(self):
