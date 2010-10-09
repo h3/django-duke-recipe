@@ -64,23 +64,8 @@ class Recipe(object):
         self.install_git_version(version, location)
 
         extra_paths = [os.path.join(location), base_dir]
-
-        # Add libraries found by a site .pth files to our extra-paths.
-        if 'pth-files' in self.options:
-            import site
-            for pth_file in self.options['pth-files'].splitlines():
-                pth_libs = site.addsitedir(pth_file, set())
-                if not pth_libs:
-                    self.log.warning(
-                        "No site *.pth libraries found for pth_file=%s" % (
-                         pth_file,))
-                else:
-                    self.log.info("Adding *.pth libraries=%s" % pth_libs)
-                    self.options['extra-paths'] += '\n' + '\n'.join(pth_libs)
-
         pythonpath = [p.replace('/', os.path.sep) for p in
                       self.options['extra-paths'].splitlines() if p.strip()]
-
         extra_paths.extend(pythonpath)
         requirements, ws = self.egg.working_set(['djangorecipe'])
 
