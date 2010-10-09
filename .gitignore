@@ -8,7 +8,7 @@ build
 downloads
 eggs
 example
-src/*.egg-info
+*.egg-info
 setuptools_bzr-1.2-py2.6.egg
 .project
 .pydevproject

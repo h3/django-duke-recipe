@@ -22,8 +22,8 @@ setup(name='djangorecipe',
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: BSD License',
         ],
-      package_dir={'': 'src'},
-      packages=find_packages('src'),
+      package_dir={'': 'djangorecipe'},
+      packages=find_packages('djangorecipe'),
       keywords='',
       author='Jeroen Vloothuis',
       author_email='jeroen.vloothuis@xs4all.nl',
@@ -37,6 +37,6 @@ setup(name='djangorecipe',
       entry_points="""
       # -*- Entry points: -*-
       [zc.buildout]
-      default = djangorecipe.recipe:Recipe
+      default = recipe:Recipe
       """,
       )
