@@ -1,14 +1,10 @@
 from random import choice
+import logging
 import os
 import subprocess
-import urllib2
 import shutil
-import logging
-import re
 
-from zc.buildout import UserError
 import zc.recipe.egg
-import setuptools
 
 
 
