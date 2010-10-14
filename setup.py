@@ -2,26 +2,25 @@ import os
 
 from setuptools import setup, find_packages
 
-version = '0.19.2'
+version = '0.19.0'
 
 setup(
-    name='djangorecipe',
+    name='thechristmaspig',
     version=version,
-    description="Buildout recipe for Django",
+    description="Buildout recipe for Django. Sets up controls scripts and wsgi file.",
     long_description=open("README.rst").read(),
     classifiers=[
       'Framework :: Buildout',
       'Framework :: Django',
       'Topic :: Software Development :: Build Tools',
-      'Development Status :: 3 - Alpha',
       'License :: OSI Approved :: BSD License',
       ],
-    package_dir={'': 'djangorecipe'},
-    packages=find_packages('djangorecipe'),
+    package_dir={'': 'thechristmaspig'},
+    packages=find_packages('thechristmaspig'),
     keywords='',
-    author='Jeroen Vloothuis',
-    author_email='jeroen.vloothuis@xs4all.nl',
-    url='https://launchpad.net/djangorecipe',
+    author='Preston Timmons',
+    author_email='prestontimmons@gmail.com',
+    url='http://github.com/prestontimmons/thechristmaspig',
     license='BSD',
     zip_safe=False,
     install_requires=[

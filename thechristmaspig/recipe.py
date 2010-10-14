@@ -47,7 +47,7 @@ class Recipe(object):
         extra_paths.extend([p.replace('/', os.path.sep) for p in
             self.options['extra-paths'].splitlines() if p.strip()])
 
-        requirements, ws = self.egg.working_set(['djangorecipe'])
+        requirements, ws = self.egg.working_set(['thechristmaspig'])
 
         scripts = []
 
@@ -67,7 +67,7 @@ class Recipe(object):
 
     def create_manage_script(self, extra_paths, ws):
         return zc.buildout.easy_install.scripts(
-            [(self.options['script-name'], 'djangorecipe.manage', 'main')],
+            [(self.options['script-name'], 'thechristmaspig.manage', 'main')],
             ws, self.options['executable'], self.options['bin-directory'],
             extra_paths = extra_paths,
             arguments= "'%s.%s'" % (self.options['project'],
@@ -103,8 +103,8 @@ class Recipe(object):
             zc.buildout.easy_install.script_header + WSGI_TEMPLATE
 
         generated = zc.buildout.easy_install.scripts(
-            [('%s.wsgi' % self.options['script-name'], 'djangorecipe.wsgi',
-                'main')],
+            [('%s.wsgi' % self.options['script-name'],
+                'thechristmaspig.wsgi', 'main')],
             ws, self.options['executable'], 
             self.options['bin-directory'], extra_paths = extra_paths,
             arguments= "'%s.%s'" % (self.options["project"],

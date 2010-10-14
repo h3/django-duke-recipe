@@ -1,4 +1,6 @@
 Overview
+========
+
 This is a buildout recipe for setting up a base project and wsgi file.
 It started as a fork of `djangorecipe`_, mainly because I wanted to
 learn how it worked, which installs Django from SVN and does a lot of
@@ -31,7 +33,7 @@ Example Recipe
     repository = git://github.com/django/django.git
 
     [django-project]
-    recipe = djangorecipe
+    recipe = thechristmaspig
     project = example
     script-name = django
     eggs = ${buildout:eggs}
@@ -69,11 +71,17 @@ Use the following commands to run a demo of this package.
 
 ::
 
-    $ git clone git://github.com/prestontimmons/djangorecipe.git
-    $ cd djangorecipe
+    $ git clone git://github.com/prestontimmons/thechristmaspig.git
+    $ cd thechristmaspig
     $ python bootstrap.py
     $ bin/buildout -v
     $ bin/django test
+
+
+Why the Name?
+=============
+
+Because all the good names for Django Buildout recipes were already taken.
 
 
 .. _`djangorecipe`: http://pypi.python.org/pypi/djangorecipe
