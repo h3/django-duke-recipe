@@ -1,6 +1,4 @@
 Overview
-========
-
 This is a buildout recipe for setting up a base project and wsgi file.
 It started as a fork of `djangorecipe`_, mainly because I wanted to
 learn how it worked, which installs Django from SVN and does a lot of
@@ -33,7 +31,7 @@ Example Recipe
     repository = git://github.com/django/django.git
 
     [django-project]
-    recipe = djangoscriptrecipe
+    recipe = djangorecipe
     project = example
     script-name = django
     eggs = ${buildout:eggs}
@@ -56,12 +54,12 @@ The recipe supports the following options.
 
 ``script-name``
     The name of the scripts created in the bin folder. This script is the
-  equivalent of the ``manage.py`` Django normally creates. By default it
-  uses the name of the section (the part between the ``[ ]``).
+    equivalent of the ``manage.py`` Django normally creates. By default it
+    uses the name of the section (the part between the ``[ ]``).
 
 ``urlconf``
-  You can set this to a specific url conf. It will use the ``project.urls``
-  where project is set by the ``project`` option.
+    You can set this to a specific url conf. It will use the
+    ``project.urls`` where project is set by the ``project`` option.
 
 
 Sandbox Installation
