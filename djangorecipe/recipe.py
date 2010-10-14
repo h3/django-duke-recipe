@@ -11,13 +11,13 @@ logger = logging.getLogger(__name__)
 
 
 DIR = os.path.dirname(__file__)
-WSGI_TEMPLATE = "\n".join(
+WSGI_TEMPLATE = "".join(
     open(os.path.join(DIR, "application.wsgi")).readlines()
 )
-SETTINGS_TEMPLATE = "\n".join(
+SETTINGS_TEMPLATE = "".join(
     open(os.path.join(DIR, "settings.py")).readlines()
 )
-URLS_TEMPLATE = "\n".join(
+URLS_TEMPLATE = "".join(
     open(os.path.join(DIR, "urls.py")).readlines()
 )
 
