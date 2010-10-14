@@ -1,7 +1,13 @@
-Django Recipe
-=============
+Overview
+========
 
-A buildout recipe for setting up a base project and wsgi file.
+This is a buildout recipe for setting up a base project and wsgi file.
+It started as a fork of `djangorecipe`_, mainly because I wanted to
+learn how it worked, which installs Django from SVN and does a lot of
+other things. This is stipped down now just to set up scripts in the
+Buildout environment and to generate the wsgi file. It doesn't install
+the Django package because I believe there are better recipes to do that.
+I also edited the project template that djangorecipe used as a base.
 
 
 Example Recipe
@@ -70,3 +76,6 @@ Use the following commands to run a demo of this package.
     $ python bootstrap.py
     $ bin/buildout -v
     $ bin/django test
+
+
+.. _`djangorecipe`: http://pypi.python.org/pypi/djangorecipe
