@@ -2,34 +2,31 @@ import os
 
 from setuptools import setup, find_packages
 
-version = '0.9'
+ 
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
+requirements = ['zc.buildout', 'zc.recipe.egg']
 
 setup(
     name='thechristmaspig',
-    version=version,
+    version="0.9.6",
     description="Buildout recipe for Django. Sets up controls scripts and wsgi file.",
-    long_description=open("README.rst").read(),
-    classifiers=[
-      'Framework :: Buildout',
-      'Framework :: Django',
-      'Topic :: Software Development :: Build Tools',
-      'License :: OSI Approved :: BSD License',
-      ],
-    package_dir={'': 'thechristmaspig'},
-    packages=find_packages('thechristmaspig'),
-    keywords='',
-    author='Preston Timmons',
-    author_email='prestontimmons@gmail.com',
+    long_description=read("README.rst"),
     url='http://github.com/prestontimmons/thechristmaspig',
     license='BSD',
-    zip_safe=False,
-    install_requires=[
-      'zc.buildout',
-      'zc.recipe.egg',
+    author='Preston Timmons',
+    author_email='prestontimmons@gmail.com',
+    classifiers=[
+        'Framework :: Buildout',
+        'Framework :: Django',
+        'Topic :: Software Development :: Build Tools',
+        'License :: OSI Approved :: BSD License',
     ],
-    entry_points="""
-    # -*- Entry points: -*-
-    [zc.buildout]
-    default = recipe:Recipe
-    """,
+    packages=find_packages(exclude=['example', 'parts', 'eggs']),
+    package_data={'thechristmaspig': ['*.wsgi']},
+    keywords='',
+    zip_safe=False,
+    install_requires=requirements,
+    entry_points={'zc.buildout': ['default = thechristmaspig.recipe:Recipe']},
 )
