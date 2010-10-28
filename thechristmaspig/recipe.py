@@ -32,6 +32,7 @@ class Recipe(object):
             buildout['buildout']['bin-directory'])
         options.setdefault('project', 'project')
         options.setdefault('settings', 'settings')
+        options.setdefault('create_project', 'true')
         options.setdefault('urlconf', options['project'] + '.urls')
         options.setdefault('media_root',
             "os.path.join(os.path.dirname(__file__), 'media')")
@@ -57,11 +58,12 @@ class Recipe(object):
         # Make the wsgi and fastcgi scripts if enabled
         scripts.extend(self.make_scripts(extra_paths, ws))
 
-        if not os.path.exists(project_dir):
-            self.create_project(project_dir)
-        else:
-            logger.info('Skipping creating of project: %(project)s since '
-                'it exists' % self.options)
+        if self.options['create_project'] == 'true':
+            if not os.path.exists(project_dir):
+                self.create_project(project_dir)
+            else:
+                logger.info('Skipping creating of project: %(project)s '
+                    'since it exists' % self.options)
 
         return scripts
 
