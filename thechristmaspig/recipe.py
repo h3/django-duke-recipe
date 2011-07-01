@@ -72,8 +72,9 @@ class Recipe(object):
             [(self.options['script-name'], 'thechristmaspig.manage', 'main')],
             ws, self.options['executable'], self.options['bin-directory'],
             extra_paths = extra_paths,
-            arguments= "'%s.%s'" % (self.options['project'],
-                self.options['settings']))
+            #arguments= "'%s.%s'" % (self.options['project'],
+            #    self.options['settings']))
+            arguments = self.options.get("'settings'", "'"+self.options.get('project') + ".settings'"))
 
     def create_project(self, project_dir):
         os.makedirs(project_dir)
@@ -87,7 +88,7 @@ class Recipe(object):
         self.create_file(os.path.join(project_dir, 'settings.py'),
             SETTINGS_TEMPLATE, template_vars)
 
-        # Create the media and templates directories for our project
+        # Create the media and templates directoraes for our project
         os.mkdir(os.path.join(project_dir, 'media'))
         os.mkdir(os.path.join(project_dir, 'templates'))
 
@@ -109,8 +110,9 @@ class Recipe(object):
                 'thechristmaspig.wsgi', 'main')],
             ws, self.options['executable'], 
             self.options['bin-directory'], extra_paths = extra_paths,
-            arguments= "'%s.%s'" % (self.options["project"],
-                self.options['settings'])
+            #arguments= "'%s.%s'" % (self.options["project"],
+            #    self.options['settings'])
+            arguments = self.options.get("'settings'", "'"+self.options.get('project') + ".settings'")
         )
 
         zc.buildout.easy_install.script_template = _script_template
