@@ -1,11 +1,9 @@
 from django.core import management
+import os,imp
 
-def main(settings_file):
+def main(settings_module):
     try:
-        mod = __import__(settings_file)
-        components = settings_file.split('.')
-        for comp in components[1:]:
-            mod = getattr(mod, comp)
+        imp.find_module(settings_module)
 
     except ImportError, e:
         import sys
@@ -13,4 +11,7 @@ def main(settings_file):
                             % (settings_file, e))
         return sys.exit(1)
 
-    management.execute_manager(mod)
+    os.environ['DJANGO_SETTINGS_MODULE'] = settings_module
+    
+    utility = management.ManagementUtility()
+    utility.execute()

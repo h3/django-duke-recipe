@@ -74,7 +74,8 @@ class Recipe(object):
             extra_paths = extra_paths,
             #arguments= "'%s.%s'" % (self.options['project'],
             #    self.options['settings']))
-            arguments = self.options.get("'settings'", "'"+self.options.get('project') + ".settings'"))
+            arguments = "'%s'" % self.options.get("settings", self.options.get('project') + ".settings")
+        )
 
     def create_project(self, project_dir):
         os.makedirs(project_dir)
@@ -112,7 +113,7 @@ class Recipe(object):
             self.options['bin-directory'], extra_paths = extra_paths,
             #arguments= "'%s.%s'" % (self.options["project"],
             #    self.options['settings'])
-            arguments = self.options.get("'settings'", "'"+self.options.get('project') + ".settings'")
+            arguments = "'%s'" % self.options.get("settings", self.options.get('project') + ".settings")
         )
 
         zc.buildout.easy_install.script_template = _script_template
