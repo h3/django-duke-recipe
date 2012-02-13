@@ -1,2 +1,2 @@
 include README.rst
-include thechristmaspig/*.wsgi
+include djangodukerecipe/*.wsgi

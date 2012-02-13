@@ -9,14 +9,14 @@ def read(fname):
 requirements = ['zc.buildout', 'zc.recipe.egg']
 
 setup(
-    name='thechristmaspig',
-    version="0.9.6",
+    name='git@github.com:h3/djangodukerecipe.git',
+    version="0.1.0",
     description="Buildout recipe for Django. Sets up controls scripts and wsgi file.",
     long_description=read("README.rst"),
-    url='http://github.com/prestontimmons/thechristmaspig',
+    url='https://github.com/h3/djangodukerecipe',
     license='BSD',
-    author='Preston Timmons',
-    author_email='prestontimmons@gmail.com',
+    author='Maxime Haineault',
+    author_email='max@motion-m.ca',
     classifiers=[
         'Framework :: Buildout',
         'Framework :: Django',
@@ -24,9 +24,9 @@ setup(
         'License :: OSI Approved :: BSD License',
     ],
     packages=find_packages(exclude=['example', 'parts', 'eggs']),
-    package_data={'thechristmaspig': ['*.wsgi']},
+    package_data={'djangodukerecipe': ['*.wsgi']},
     keywords='',
     zip_safe=False,
     install_requires=requirements,
-    entry_points={'zc.buildout': ['default = thechristmaspig.recipe:Recipe']},
+    entry_points={'zc.buildout': ['default = djangodukerecipe.recipe:Recipe']},
 )
