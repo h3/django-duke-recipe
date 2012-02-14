@@ -9,7 +9,7 @@ def read(fname):
 requirements = ['zc.buildout', 'zc.recipe.egg']
 
 setup(
-    name='django-duke-recipe',
+    name='djangodukerecipe',
     version="0.1.0",
     description="Buildout recipe for Django. Sets up controls scripts and wsgi file.",
     long_description=read("README.rst"),
