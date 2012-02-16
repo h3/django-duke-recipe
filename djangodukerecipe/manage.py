@@ -8,7 +8,7 @@ def main(settings_module):
     except ImportError, e:
         import sys
         sys.stderr.write("Error loading the settings module '%s': %s"
-                            % (settings_file, e))
+                            % (settings_module, e))
         return sys.exit(1)
 
     os.environ['DJANGO_SETTINGS_MODULE'] = settings_module
