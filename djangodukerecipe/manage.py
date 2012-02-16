@@ -2,8 +2,11 @@ from django.core import management
 import os,imp
 
 def main(settings_module=None):
-    settings_module = settings_module \
-            or os.environ.get('DJANGO_SETTINGS_MODULE', 'settings')
+    if settings_module:
+        settings_module = settings_module
+        os.environ['DJANGO_SETTINGS_MODULE'] = settings_module
+    else:
+        settings_module = os.environ.get('DJANGO_SETTINGS_MODULE', 'settings')
     try:
         imp.find_module(settings_module)
     except ImportError, e:
@@ -12,5 +15,6 @@ def main(settings_module=None):
                             % (settings_module, e))
         return sys.exit(1)
 
+    
     utility = management.ManagementUtility()
     utility.execute()

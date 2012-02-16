@@ -76,10 +76,7 @@ class Recipe(object):
         return zc.buildout.easy_install.scripts(
             [(self.options['script-name'], 'djangodukerecipe.manage', 'main')],
             ws, self.options['executable'], self.options['bin-directory'],
-            extra_paths = extra_paths, arguments='')
-           # We let env. var. DJANGO_SETTINGS_MODULE handle this
-           #arguments= "'%s.%s'" % (self.options['project'],
-           #    self.options['settings']))
+            extra_paths = extra_paths, arguments='%s' % self.options['settings'])
 
     def create_project(self, project_dir):
         os.makedirs(project_dir)
