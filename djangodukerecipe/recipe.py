@@ -72,9 +72,9 @@ class Recipe(object):
             [(self.options['script-name'], 'djangodukerecipe.manage', 'main')],
             ws, self.options['executable'], self.options['bin-directory'],
             extra_paths = extra_paths,
-            #arguments= "'%s.%s'" % (self.options['project'],
-            #    self.options['settings']))
-            arguments = "'%s'" % self.options.get("settings", self.options.get('project') + ".settings")
+            arguments= "'%s.%s'" % (self.options['project'],
+                self.options['settings']))
+            #arguments = "'%s'" % self.options.get("settings", self.options.get('project') + ".settings")
         )
 
     def create_project(self, project_dir):
@@ -139,5 +139,6 @@ class Recipe(object):
         f.close()
 
     def generate_secret(self):
+        # TODO: Really ? Check how django generate it's secret.
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
         return ''.join([choice(chars) for i in range(50)])
