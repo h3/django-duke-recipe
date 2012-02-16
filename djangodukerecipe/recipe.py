@@ -12,14 +12,19 @@ logger = logging.getLogger(__name__)
 
 DIR = os.path.dirname(__file__)
 WSGI_TEMPLATE = "".join(
-    open(os.path.join(DIR, "application.wsgi")).readlines()
-)
+    open(os.path.join(DIR, "application.wsgi")).readlines())
+
 SETTINGS_TEMPLATE = "".join(
-    open(os.path.join(DIR, "settings.py")).readlines()
-)
+    open(os.path.join(DIR, "settings.py")).readlines())
+
+DEV_SETTINGS_TEMPLATE = "".join(
+    open(os.path.join(DIR, "settings_dev.py")).readlines())
+
+PROD_SETTINGS_TEMPLATE = "".join(
+    open(os.path.join(DIR, "settings_prod.py")).readlines())
+
 URLS_TEMPLATE = "".join(
-    open(os.path.join(DIR, "urls.py")).readlines()
-)
+    open(os.path.join(DIR, "urls.py")).readlines())
 
 
 class Recipe(object):
@@ -71,11 +76,10 @@ class Recipe(object):
         return zc.buildout.easy_install.scripts(
             [(self.options['script-name'], 'djangodukerecipe.manage', 'main')],
             ws, self.options['executable'], self.options['bin-directory'],
-            extra_paths = extra_paths,
-            arguments= "'%s.%s'" % (self.options['project'],
-                self.options['settings']))
-            #arguments = "'%s'" % self.options.get("settings", self.options.get('project') + ".settings")
-        )
+            extra_paths = extra_paths, arguments='')
+           # We let env. var. DJANGO_SETTINGS_MODULE handle this
+           #arguments= "'%s.%s'" % (self.options['project'],
+           #    self.options['settings']))
 
     def create_project(self, project_dir):
         os.makedirs(project_dir)
@@ -88,6 +92,12 @@ class Recipe(object):
 
         self.create_file(os.path.join(project_dir, 'settings.py'),
             SETTINGS_TEMPLATE, template_vars)
+
+        self.create_file(os.path.join(project_dir, 'settings_dev.py'),
+            DEV_SETTINGS_TEMPLATE, template_vars)
+
+        self.create_file(os.path.join(project_dir, 'settings_prod.py'),
+            PROD_SETTINGS_TEMPLATE, template_vars)
 
         # Create the media and templates directoraes for our project
         os.mkdir(os.path.join(project_dir, 'media'))
