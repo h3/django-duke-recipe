@@ -1,4 +1,4 @@
-from paraskiflex.settings import *
+from %(project)s.settings import *
 
 DEV = False
 DEBUG = False
