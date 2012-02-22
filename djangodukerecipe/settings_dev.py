@@ -3,7 +3,7 @@ Django development settings
 """
 
 import os, sys
-from %(project)s.%(settings)s import *
+from %(project)s.settings import *
 
 DEV = True
 DEBUG = True
