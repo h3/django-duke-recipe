@@ -17,10 +17,13 @@ WSGI_TEMPLATE = "".join(
 SETTINGS_TEMPLATE = "".join(
     open(os.path.join(DIR, "settings/settings.py")).readlines())
 
+LOCAL_SETTINGS_TEMPLATE = "".join(
+    open(os.path.join(DIR, "settings/local_settings.py")).readlines())
+
 DEV_SETTINGS_TEMPLATE = "".join(
     open(os.path.join(DIR, "settings/dev.py")).readlines())
 
-PROD_SETTINGS_TEMPLATE = "".join(
+DEFAULT_SETTINGS_TEMPLATE = "".join(
     open(os.path.join(DIR, "settings/default.py")).readlines())
 
 URLS_TEMPLATE = "".join(
@@ -90,6 +93,24 @@ class Recipe(object):
             - urls.py 
             - wsgi.py (skipped)
 
+        Django duke final project structure
+
+        + project-root-folder/
+          - setup.py
+          - bootstrap.py
+          - buildout.cfg
+          + project
+            - __init__.py
+            - settings.py
+            - local_settings.py
+            - urls.py 
+            + conf/
+              - default.py
+              - dev.py
+              - 
+
+
+
         http://justcramer.com/2011/01/13/settings-in-django/
           
         """
@@ -114,11 +135,11 @@ class Recipe(object):
 
         # Create local settings
         self.create_file(os.path.join(project_dir, 'local_settings.py'),
-            SETTINGS_TEMPLATE, template_vars)
+            LOCAL_SETTINGS_TEMPLATE, template_vars)
 
         # Create default (base) settings
         self.create_file(os.path.join(project_dir, 'conf/settings/default.py'),
-            DEV_SETTINGS_TEMPLATE, template_vars)
+            DEFAULT_SETTINGS_TEMPLATE, template_vars)
 
         # Create default (base) development settings
         self.create_file(os.path.join(project_dir, 'conf/settings/dev.py'),
