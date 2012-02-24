@@ -123,6 +123,7 @@ class Recipe(object):
 
         # Create conf directory
         os.makedirs(os.path.join(project_dir, 'conf/'))
+        os.makedirs(os.path.join(project_dir, 'conf/settings/'))
         open(os.path.join(project_dir, 'conf/__init__.py'), 'w').close()
 
         # Create root urls.py
