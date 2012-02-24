@@ -134,7 +134,7 @@ class Recipe(object):
             SETTINGS_TEMPLATE, template_vars)
 
         # Create local settings
-        self.create_file(os.path.join(project_dir, 'local_settings.py'),
+        self.create_file(os.path.join(project_dir, 'local_settings.py.example'),
             LOCAL_SETTINGS_TEMPLATE, template_vars)
 
         # Create default (base) settings
