@@ -15,13 +15,13 @@ WSGI_TEMPLATE = "".join(
     open(os.path.join(DIR, "application.wsgi")).readlines())
 
 SETTINGS_TEMPLATE = "".join(
-    open(os.path.join(DIR, "settings.py")).readlines())
+    open(os.path.join(DIR, "settings/settings.py")).readlines())
 
 DEV_SETTINGS_TEMPLATE = "".join(
-    open(os.path.join(DIR, "settings_dev.py")).readlines())
+    open(os.path.join(DIR, "settings/dev.py")).readlines())
 
 PROD_SETTINGS_TEMPLATE = "".join(
-    open(os.path.join(DIR, "settings_prod.py")).readlines())
+    open(os.path.join(DIR, "settings/default.py")).readlines())
 
 URLS_TEMPLATE = "".join(
     open(os.path.join(DIR, "urls.py")).readlines())
@@ -79,29 +79,55 @@ class Recipe(object):
             extra_paths = extra_paths, arguments='"%s"' % self.options['settings'])
 
     def create_project(self, project_dir):
-        os.makedirs(project_dir)
+        """
+        Django 1.4 project structure
 
+        + project-root-folder/
+          - manage.py (skipped)
+          + project
+            - __init__.py
+            - settings.py
+            - urls.py 
+            - wsgi.py (skipped)
+
+        http://justcramer.com/2011/01/13/settings-in-django/
+          
+        """
         template_vars = {'secret': self.generate_secret()}
         template_vars.update(self.options)
 
+        # Create project directory and __init__.py 
+        os.makedirs(project_dir)
+        open(os.path.join(project_dir, '__init__.py'), 'w').close()
+
+        # Create conf directory
+        os.makedirs(os.path.join(project_dir, 'conf/'))
+        open(os.path.join(project_dir, 'conf/__init__.py'), 'w').close()
+
+        # Create root urls.py
         self.create_file(os.path.join(project_dir, 'urls.py'),
             URLS_TEMPLATE, template_vars)
 
+        # Create settings entry point
         self.create_file(os.path.join(project_dir, 'settings.py'),
             SETTINGS_TEMPLATE, template_vars)
 
-        self.create_file(os.path.join(project_dir, 'settings_dev.py'),
+        # Create local settings
+        self.create_file(os.path.join(project_dir, 'local_settings.py'),
+            SETTINGS_TEMPLATE, template_vars)
+
+        # Create default (base) settings
+        self.create_file(os.path.join(project_dir, 'conf/settings/default.py'),
             DEV_SETTINGS_TEMPLATE, template_vars)
 
-        self.create_file(os.path.join(project_dir, 'settings_prod.py'),
-            PROD_SETTINGS_TEMPLATE, template_vars)
+        # Create default (base) development settings
+        self.create_file(os.path.join(project_dir, 'conf/settings/dev.py'),
+            DEV_SETTINGS_TEMPLATE, template_vars)
 
-        # Create the media and templates directoraes for our project
+        # Create the media directory
         os.mkdir(os.path.join(project_dir, 'media'))
-        os.mkdir(os.path.join(project_dir, 'templates'))
+        os.mkdir(os.path.join(project_dir, 'media/uploads/'))
 
-        # Add __init__.py to the project directory
-        open(os.path.join(project_dir, '__init__.py'), 'w').close()
 
     def make_scripts(self, extra_paths, ws):
         # The scripts function uses a script_template variable hardcoded
