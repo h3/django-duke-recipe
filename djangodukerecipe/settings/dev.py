@@ -1,6 +1,6 @@
 # Development environment settings
 
-from %(project_name)s.conf.settings.default import *
+from %(project)s.conf.settings.default import *
 
 import getpass
 
