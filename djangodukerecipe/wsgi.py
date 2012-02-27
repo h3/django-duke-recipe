@@ -17,12 +17,11 @@ import os, sys
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "%(project)s.settings")
 
-%(relative_paths_setup)s
 sys.path[0:0] = [
-  %(path)s,
-  ]
-%(initialization)s
-import %(module_name)s
+    %(pythonpaths)s
+]
+
+import %(project)s
 
 # This application object is used by any WSGI server configured to use this
 # file. This includes Django's development server, if the WSGI_APPLICATION

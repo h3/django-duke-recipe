@@ -13,11 +13,11 @@ logger = logging.getLogger(__name__)
 DIR = os.path.dirname(__file__)
 
 def template(n):
-    return open(os.path.join(DIR, n)).readlines())
+    return "".join(open(os.path.join(DIR, n)).readlines())
 
 WSGI_TEMPLATE             = template('wsgi.py')
 #WSGI_TEMPLATE             = template('application.wsgi')
-SETTINGS_TEMPLATE         = template('settings/settings.py')""))
+SETTINGS_TEMPLATE         = template('settings/settings.py')
 LOCAL_SETTINGS_TEMPLATE   = template('settings/local_settings.py')
 DEV_SETTINGS_TEMPLATE     = template('settings/dev.py')
 DEFAULT_SETTINGS_TEMPLATE = template('settings/default.py')
@@ -102,7 +102,11 @@ class Recipe(object):
               - default.py
               - dev.py
         """
-        template_vars = {'secret': self.generate_secret()}
+        p = "',\n    '".join(self.buildout['python']['extra-paths'].split('\n'))
+        template_vars = {
+            'secret': self.generate_secret(),
+            'pythonpaths': "'%s'," % p
+        }
         template_vars.update(self.options)
 
         # Create project directory and __init__.py 
@@ -115,8 +119,13 @@ class Recipe(object):
 
         os.makedirs(os.path.join(project_dir, 'conf/settings/'))
         open(os.path.join(project_dir, 'conf/settings/__init__.py'), 'w').close()
+        
 
+        print self.buildout['python']['extra-paths']
         # Create the wsgi application
+
+
+
         self.create_file(os.path.join(project_dir, 'wsgi.py'),
             WSGI_TEMPLATE, template_vars)
 
