@@ -1,4 +1,5 @@
-# Django settings for testdjango project.
+# Django settings for %(project)s project.
+# http://justcramer.com/2011/01/13/settings-in-django/
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -8,6 +9,8 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
+
+DATABASE_ROUTERS = []
 
 DATABASES = {
     'default': {
@@ -89,6 +92,8 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.app_directories.Loader',
 #     'django.template.loaders.eggs.Loader',
 )
+
+TEMPLATE_CONTEXT_PROCESSORS = []
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',

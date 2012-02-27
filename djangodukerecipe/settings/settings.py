@@ -1,4 +1,31 @@
-# http://justcramer.com/2011/01/13/settings-in-django/
+# Django settings entry point for %(project)s project.
+
+"""
+WARNING: YOU SHOULD NOT HAVE TO EDIT THIS FILE. 
+
+http://justcramer.com/2011/01/13/settings-in-django/
+
+To configure your site, modify one of the following files:
+
+ * ./local_settings.py
+
+   This settings extends dev.py and is used to develop the project. This file 
+   is specific to each developers/machines your project is being developed on.
+   So it should not be added to your VCS.
+
+ * ./conf/settings/dev.py
+
+   This settings contains settings specific to the development environment. 
+   For example: DEBUG = True. If the settings you want to set is specific to
+   you or the machine you are working on, it should instead be set in 
+   local_settings.py
+
+ * ./conf/settings/default.py
+
+   This is the main settings files. It should contain the default settings of
+   your project. The one that are used in production that is.
+
+"""
 
 import os
 

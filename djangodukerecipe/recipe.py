@@ -11,23 +11,17 @@ logger = logging.getLogger(__name__)
 
 
 DIR = os.path.dirname(__file__)
-WSGI_TEMPLATE = "".join(
-    open(os.path.join(DIR, "application.wsgi")).readlines())
 
-SETTINGS_TEMPLATE = "".join(
-    open(os.path.join(DIR, "settings/settings.py")).readlines())
+def template(n):
+    return open(os.path.join(DIR, n)).readlines())
 
-LOCAL_SETTINGS_TEMPLATE = "".join(
-    open(os.path.join(DIR, "settings/local_settings.py")).readlines())
-
-DEV_SETTINGS_TEMPLATE = "".join(
-    open(os.path.join(DIR, "settings/dev.py")).readlines())
-
-DEFAULT_SETTINGS_TEMPLATE = "".join(
-    open(os.path.join(DIR, "settings/default.py")).readlines())
-
-URLS_TEMPLATE = "".join(
-    open(os.path.join(DIR, "urls.py")).readlines())
+WSGI_TEMPLATE             = template('wsgi.py')
+#WSGI_TEMPLATE             = template('application.wsgi')
+SETTINGS_TEMPLATE         = template('settings/settings.py')""))
+LOCAL_SETTINGS_TEMPLATE   = template('settings/local_settings.py')
+DEV_SETTINGS_TEMPLATE     = template('settings/dev.py')
+DEFAULT_SETTINGS_TEMPLATE = template('settings/default.py')
+URLS_TEMPLATE             = template('urls.py')
 
 
 class Recipe(object):
@@ -64,7 +58,7 @@ class Recipe(object):
         scripts.extend(self.create_manage_script(extra_paths, ws))
 
         # Make the wsgi and fastcgi scripts if enabled
-        scripts.extend(self.make_scripts(extra_paths, ws))
+       #scripts.extend(self.make_scripts(extra_paths, ws))
 
         if self.options['create_project'] == 'true':
             if not os.path.exists(project_dir):
@@ -107,12 +101,6 @@ class Recipe(object):
             + conf/
               - default.py
               - dev.py
-              - 
-
-
-
-        http://justcramer.com/2011/01/13/settings-in-django/
-          
         """
         template_vars = {'secret': self.generate_secret()}
         template_vars.update(self.options)
@@ -121,10 +109,16 @@ class Recipe(object):
         os.makedirs(project_dir)
         open(os.path.join(project_dir, '__init__.py'), 'w').close()
 
-        # Create conf directory
+        # Create conf directories
         os.makedirs(os.path.join(project_dir, 'conf/'))
-        os.makedirs(os.path.join(project_dir, 'conf/settings/'))
         open(os.path.join(project_dir, 'conf/__init__.py'), 'w').close()
+
+        os.makedirs(os.path.join(project_dir, 'conf/settings/'))
+        open(os.path.join(project_dir, 'conf/settings/__init__.py'), 'w').close()
+
+        # Create the wsgi application
+        self.create_file(os.path.join(project_dir, 'wsgi.py'),
+            WSGI_TEMPLATE, template_vars)
 
         # Create root urls.py
         self.create_file(os.path.join(project_dir, 'urls.py'),
@@ -151,29 +145,29 @@ class Recipe(object):
         os.mkdir(os.path.join(project_dir, 'media/uploads/'))
 
 
-    def make_scripts(self, extra_paths, ws):
-        # The scripts function uses a script_template variable hardcoded
-        # in Buildout to generate the script file. Since the wsgi file
-        # needs to create a callable application function rather than call
-        # a script, monkeypatch the script template here.
-        _script_template = zc.buildout.easy_install.script_template
+   #def make_scripts(self, extra_paths, ws):
+   #    # The scripts function uses a script_template variable hardcoded
+   #    # in Buildout to generate the script file. Since the wsgi file
+   #    # needs to create a callable application function rather than call
+   #    # a script, monkeypatch the script template here.
+   #    _script_template = zc.buildout.easy_install.script_template
 
-        zc.buildout.easy_install.script_template = \
-            zc.buildout.easy_install.script_header + WSGI_TEMPLATE
+   #    zc.buildout.easy_install.script_template = \
+   #        zc.buildout.easy_install.script_header + WSGI_TEMPLATE
 
-        generated = zc.buildout.easy_install.scripts(
-            [('%s.wsgi' % self.options['script-name'],
-                'djangodukerecipe.wsgi', 'main')],
-            ws, self.options['executable'], 
-            self.options['bin-directory'], extra_paths = extra_paths,
-            #arguments= "'%s.%s'" % (self.options["project"],
-            #    self.options['settings'])
-            arguments = "'%s'" % self.options.get("settings", self.options.get('project') + ".settings")
-        )
+   #    generated = zc.buildout.easy_install.scripts(
+   #        [('%s.wsgi' % self.options['script-name'],
+   #            'djangodukerecipe.wsgi', 'main')],
+   #        ws, self.options['executable'], 
+   #        self.options['bin-directory'], extra_paths = extra_paths,
+   #        #arguments= "'%s.%s'" % (self.options["project"],
+   #        #    self.options['settings'])
+   #        arguments = "'%s'" % self.options.get("settings", self.options.get('project') + ".settings")
+   #    )
 
-        zc.buildout.easy_install.script_template = _script_template
+   #    zc.buildout.easy_install.script_template = _script_template
 
-        return generated
+   #    return generated
 
     def update(self):
         self.install()
