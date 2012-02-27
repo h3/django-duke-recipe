@@ -120,12 +120,7 @@ class Recipe(object):
         os.makedirs(os.path.join(project_dir, 'conf/settings/'))
         open(os.path.join(project_dir, 'conf/settings/__init__.py'), 'w').close()
         
-
-        print self.buildout['python']['extra-paths']
         # Create the wsgi application
-
-
-
         self.create_file(os.path.join(project_dir, 'wsgi.py'),
             WSGI_TEMPLATE, template_vars)
 
