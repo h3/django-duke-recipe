@@ -12,6 +12,7 @@ TEMPLATE_LOADERS = (
 
 #DISABLED_APPS = ['sentry.client', 'sentry']
 
+DEV = True
 DEBUG = True
 
 DATABASE_PREFIX = ''
