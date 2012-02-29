@@ -17,9 +17,24 @@ import os, sys
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "%(project)s.settings")
 
-sys.path[0:0] = [
-    %(pythonpaths)s
-]
+DOC_ROOT = os.path.realpath(os.path.join(\
+        os.path.dirname(os.path.abspath(__file__)), '../'))
+
+PYTHONPATH = [DOC_ROOT, os.path.join(DOC_ROOT, '%(project)s')]
+
+SRC_PATH = os.path.join(DOC_ROOT, 'src/')
+for l in os.listdir(SRC_PATH):
+    p = os.path.join(SRC_PATH, l)
+    if os.path.isdir(p) and os.path.exists(os.path.join(p, 'setup.py')):
+        PYTHONPATH.append(p)
+
+EGGS_PATH = os.path.join(DOC_ROOT, '.duke/eggs/')
+for l in os.listdir(EGGS_PATH):
+    p = os.path.join(EGGS_PATH, l)
+    if os.path.isdir(p) and p.endswith('.egg'):
+        PYTHONPATH.append(p)
+
+sys.path[0:0] = PYTHONPATH
 
 import %(project)s
 
