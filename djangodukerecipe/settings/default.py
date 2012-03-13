@@ -5,7 +5,8 @@
 
 import os
 
-PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
+PROJECT_PATH = os.path.realpath(os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), '../../'))
 
 DEV = False
 DEBUG = False
