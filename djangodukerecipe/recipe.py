@@ -183,11 +183,11 @@ class Recipe(object):
         command = subprocess.Popen(cmd, shell=True, stdout=output, **kwargs)
         return command.wait()
 
-    def create_file(self, file, template, options):
-        if os.path.exists(file):
+    def create_file(self, f, template, options):
+        if os.path.exists(f):
             return
 
-        f = open(file, 'w')
+        f = open(f, 'w')
         f.write(template % options)
         f.close()
 
