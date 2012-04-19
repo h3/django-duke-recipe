@@ -11,7 +11,7 @@ urlpatterns = patterns('',
    #(r'^grappelli/', include('grappelli.urls'))
    #(r'',            include('website.urls')),
    #(r'^favicon.ico$', 'django.views.generic.simple.redirect_to', {
-   #    'url': '%swebsite/img/favicon.ico' % settings.STATIC_URL}),
+   #    'url': '%%swebsite/img/favicon.ico' %% settings.STATIC_URL}),
 )
 
 if settings.DEV:
