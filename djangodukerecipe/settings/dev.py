@@ -62,4 +62,9 @@ for k, v in DATABASES.iteritems():
 #    'disqus.middleware.profile.ProfileMiddleware',
 #)
 
-CACHE_BACKEND = 'locmem://'
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'CACHE+' + SECRET_KEY
+    }
+}
