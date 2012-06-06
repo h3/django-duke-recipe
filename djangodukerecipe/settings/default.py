@@ -158,7 +158,8 @@ INSTALLED_APPS = (
 #   'django_generic_flatblocks',
 #   'django_generic_flatblocks.contrib.gblocks',
 #   'frontadmin',
-#    'seoutils',
+#   'seoutils',
+#   'website', 
 )
 
 # A sample logging configuration. The only tangible logging
