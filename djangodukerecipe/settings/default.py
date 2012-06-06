@@ -155,6 +155,11 @@ INSTALLED_APPS = (
 #   'grappellifit'
     'django.contrib.admin',
 #   'django.contrib.admindocs',
+#   'django_generic_flatblocks',
+#   'django_generic_flatblocks.contrib.gblocks',
+#   'frontadmin',
+#   'seoutils',
+#   'website', 
 )
 
 # A sample logging configuration. The only tangible logging
@@ -209,4 +214,10 @@ LOGGING = {
 # easy_thumbnails: store into media/cache/ instead of polluting media/uploads/
 #THUMBNAIL_MEDIA_ROOT = os.path.join(MEDIA_ROOT, 'cache/') 
 #THUMBNAIL_MEDIA_URL = '/media/cache/'
+
+#FRONTADMIN_PLUGINS = [
+#    'seoutils.frontadmin_plugin',
+#]
+
+
 

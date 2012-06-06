@@ -8,7 +8,7 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
     (r'^accounts/login/$', 'django.contrib.auth.views.login'),
    #(r'^i18n/',      include('django.conf.urls.i18n')),
-   #(r'^grappelli/', include('grappelli.urls'))
+   #(r'^grappelli/', include('grappelli.urls')),
    #(r'',            include('website.urls')),
    #(r'^favicon.ico$', 'django.views.generic.simple.redirect_to', {
    #    'url': '%%swebsite/img/favicon.ico' %% settings.STATIC_URL}),
