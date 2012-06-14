@@ -152,7 +152,7 @@ INSTALLED_APPS = (
 #   'django.contrib.humanize',
 #   'grappelli',
 #   'grappelli.dashboard',
-#   'grappellifit'
+#   'grappellifit',
     'django.contrib.admin',
 #   'django.contrib.admindocs',
 #   'django_generic_flatblocks',
