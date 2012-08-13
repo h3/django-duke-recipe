@@ -1,27 +1,11 @@
-from random import choice
 import logging
 import os
 import subprocess
-import shutil
 
 from zc.recipe.egg import Egg
 import zc.buildout.easy_install
 
 logger = logging.getLogger(__name__)
-
-
-DIR = os.path.dirname(__file__)
-
-def template(n):
-    return "".join(open(os.path.join(DIR, n)).readlines())
-
-WSGI_TEMPLATE             = template('wsgi.py')
-#WSGI_TEMPLATE             = template('application.wsgi')
-SETTINGS_TEMPLATE         = template('settings/settings.py')
-LOCAL_SETTINGS_TEMPLATE   = template('settings/local_settings.py')
-DEV_SETTINGS_TEMPLATE     = template('settings/dev.py')
-DEFAULT_SETTINGS_TEMPLATE = template('settings/default.py')
-URLS_TEMPLATE             = template('urls.py')
 
 
 class Recipe(object):
@@ -32,12 +16,11 @@ class Recipe(object):
 
         options.setdefault('bin-directory',
             buildout['buildout']['bin-directory'])
+
         options.setdefault('project', 'project')
         options.setdefault('settings', 'settings')
-        options.setdefault('create_project', 'true')
-        options.setdefault('urlconf', options['project'] + '.urls')
-        options.setdefault('media-root',
-            "os.path.join(os.path.dirname(__file__), 'media')")
+        options.setdefault('create-project', 'true')
+        options.setdefault('url-conf', options['project'] + '.urls')
         options.setdefault('extra-paths',
             buildout["buildout"].get('extra-paths', ''))
         options.setdefault('script-name',  name)
@@ -62,7 +45,7 @@ class Recipe(object):
         # Make the wsgi and fastcgi scripts if enabled
         #scripts.extend(self.make_scripts(extra_paths, ws))
 
-        if self.options['create_project'] == 'true':
+        if self.options['create-project'] == 'true':
             self.create_project()
 
         return scripts
@@ -155,16 +138,3 @@ class Recipe(object):
             output = None
         command = subprocess.Popen(cmd, shell=True, stdout=output, **kwargs)
         return command.wait()
-
-    def create_file(self, f, template, options):
-        if os.path.exists(f):
-            return
-
-        f = open(f, 'w')
-        f.write(template % options)
-        f.close()
-
-    def generate_secret(self):
-        # TODO: Really ? Check how django generate it's secret.
-        chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
-        return ''.join([choice(chars) for i in range(50)])
