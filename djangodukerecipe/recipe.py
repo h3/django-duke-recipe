@@ -36,36 +36,34 @@ class Recipe(object):
         options.setdefault('settings', 'settings')
         options.setdefault('create_project', 'true')
         options.setdefault('urlconf', options['project'] + '.urls')
-        options.setdefault('media_root',
+        options.setdefault('media-root',
             "os.path.join(os.path.dirname(__file__), 'media')")
         options.setdefault('extra-paths',
             buildout["buildout"].get('extra-paths', ''))
         options.setdefault('script-name',  name)
 
     def install(self):
-        base_dir = self.buildout['buildout']['directory']
-        project_dir = os.path.join(base_dir, self.options['project'])
-
+        scripts     = []
+        base_dir    = self.buildout['buildout']['directory']
         extra_paths = [base_dir]
+
         extra_paths.extend([p.replace('/', os.path.sep) for p in
             self.options['extra-paths'].splitlines() if p.strip()])
 
-        requirements, ws = self.egg.working_set(['djangodukerecipe'])
+        for p in os.listdir(self.buildout['buildout']['eggs-directory']):
+            if p.endswith('.egg'):
+                extra_paths.append(os.path.join(base_dir, '.duke/eggs/%s/' % p))
 
-        scripts = []
+        requirements, ws = self.egg.working_set(['djangodukerecipe'])
 
         # Create the Django management script
         scripts.extend(self.create_manage_script(extra_paths, ws))
 
         # Make the wsgi and fastcgi scripts if enabled
-       #scripts.extend(self.make_scripts(extra_paths, ws))
+        #scripts.extend(self.make_scripts(extra_paths, ws))
 
         if self.options['create_project'] == 'true':
-            if not os.path.exists(project_dir):
-                self.create_project(project_dir)
-            else:
-                logger.info('Skipping creating of project: %(project)s '
-                    'since it exists' % self.options)
+            self.create_project()
 
         return scripts
 
@@ -75,7 +73,7 @@ class Recipe(object):
             ws, self.options['executable'], self.options['bin-directory'],
             extra_paths = extra_paths, arguments='"%s"' % self.options['settings'])
 
-    def create_project(self, project_dir):
+    def create_project(self):
         """
         Django 1.4 project structure
 
@@ -102,51 +100,25 @@ class Recipe(object):
               - default.py
               - dev.py
         """
-        p = "',\n    '".join(self.buildout['python']['extra-paths'].split('\n'))
-        template_vars = {
-            'secret': self.generate_secret(),
-            'pythonpaths': "'%s'," % p
-        }
-        template_vars.update(self.options)
+        base_dir    = self.buildout['buildout']['directory']
+        project_dir = os.path.join(base_dir, self.options['project'])
+        bin_path    = os.path.join(base_dir, '.duke/bin/')
 
-        # Create project directory and __init__.py 
-        os.makedirs(project_dir)
-        open(os.path.join(project_dir, '__init__.py'), 'w').close()
+        if os.path.exists(project_dir):
+            logger.info('Skipping creating of project: %(project)s '
+                'since it exists' % self.options)
+        else:
+           #p = "',\n    '".join(self.buildout['python']['extra-paths'].split('\n'))
 
-        # Create conf directories
-        os.makedirs(os.path.join(project_dir, 'conf/'))
-        open(os.path.join(project_dir, 'conf/__init__.py'), 'w').close()
+            logger.info('Creating project: %s ' % self.options['project'])
+            logger.info(self.options['extra-paths'])
 
-        os.makedirs(os.path.join(project_dir, 'conf/settings/'))
-        open(os.path.join(project_dir, 'conf/settings/__init__.py'), 'w').close()
-        
-        # Create the wsgi application
-        self.create_file(os.path.join(project_dir, 'wsgi.py'),
-            WSGI_TEMPLATE, template_vars)
-
-        # Create root urls.py
-        self.create_file(os.path.join(project_dir, 'urls.py'),
-            URLS_TEMPLATE, template_vars)
-
-        # Create settings entry point
-        self.create_file(os.path.join(project_dir, 'settings.py'),
-            SETTINGS_TEMPLATE, template_vars)
-
-        # Create local settings
-        self.create_file(os.path.join(project_dir, 'local_settings.py.example'),
-            LOCAL_SETTINGS_TEMPLATE, template_vars)
-
-        # Create default (base) settings
-        self.create_file(os.path.join(project_dir, 'conf/settings/default.py'),
-            DEFAULT_SETTINGS_TEMPLATE, template_vars)
-
-        # Create default (base) development settings
-        self.create_file(os.path.join(project_dir, 'conf/settings/dev.py'),
-            DEV_SETTINGS_TEMPLATE, template_vars)
-
-        # Create the media directory
-        os.mkdir(os.path.join(project_dir, 'media'))
-        os.mkdir(os.path.join(project_dir, 'media/uploads/'))
+            self.command('%(django)s startproject %(options)s %(project)s %(dest)s' % {
+                'django': os.path.join(bin_path, 'django'), 
+                'project': self.options['project'],
+                'options': '--template=/tmp/django-website --extension=py,rst',
+                'dest': base_dir,
+            })
 
 
    #def make_scripts(self, extra_paths, ws):
@@ -177,6 +149,7 @@ class Recipe(object):
         self.install()
 
     def command(self, cmd, **kwargs):
+        logger.info('Executing %s ' % cmd)
         output = subprocess.PIPE
         if self.buildout['buildout'].get('verbosity'):
             output = None
