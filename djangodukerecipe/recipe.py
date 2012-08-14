@@ -99,7 +99,7 @@ class Recipe(object):
             self.command('%(django)s startproject %(options)s %(project)s %(dest)s' % {
                 'django': os.path.join(bin_path, 'django'), 
                 'project': self.options['project'],
-                'options': '--template=/tmp/django-website --extension=py,rst',
+                'options': '--template=%s --extension=py,rst' % self.options['template'],
                 'dest': base_dir,
             })
 
