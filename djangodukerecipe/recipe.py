@@ -96,7 +96,7 @@ class Recipe(object):
             logger.info('Creating project: %s ' % self.options['project'])
             logger.info(self.options['extra-paths'])
 
-            if self.options.get('template')
+            if self.options.get('template'):
                 options = '--template=%s --extension=py,rst' % self.options['template']
             else:
                 options = ''
