@@ -96,10 +96,15 @@ class Recipe(object):
             logger.info('Creating project: %s ' % self.options['project'])
             logger.info(self.options['extra-paths'])
 
+            if self.options.get('template')
+                options = '--template=%s --extension=py,rst' % self.options['template']
+            else:
+                options = ''
+
             self.command('%(django)s startproject %(options)s %(project)s %(dest)s' % {
                 'django': os.path.join(bin_path, 'django'), 
                 'project': self.options['project'],
-                'options': '--template=%s --extension=py,rst' % self.options['template'],
+                'options': options,
                 'dest': base_dir,
             })
 
