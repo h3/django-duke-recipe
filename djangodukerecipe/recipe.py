@@ -65,7 +65,7 @@ class Recipe(object):
           + project
             - __init__.py
             - settings.py
-            - urls.py 
+            - urls.py
             - wsgi.py (skipped)
 
         Django duke final project structure
@@ -78,7 +78,7 @@ class Recipe(object):
             - __init__.py
             - settings.py
             - local_settings.py
-            - urls.py 
+            - urls.py
             + conf/
               - default.py
               - dev.py
@@ -101,8 +101,11 @@ class Recipe(object):
             else:
                 options = ''
 
+            # Lazy fix for weird file permission problem..
+            self.command('chmod a+x '+ os.path.join(bin_path, 'django'))
+
             self.command('%(django)s startproject %(options)s %(project)s %(dest)s' % {
-                'django': os.path.join(bin_path, 'django'), 
+                'django': os.path.join(bin_path, 'django'),
                 'project': self.options['project'],
                 'options': options,
                 'dest': base_dir,
@@ -122,7 +125,7 @@ class Recipe(object):
    #    generated = zc.buildout.easy_install.scripts(
    #        [('%s.wsgi' % self.options['script-name'],
    #            'djangodukerecipe.wsgi', 'main')],
-   #        ws, self.options['executable'], 
+   #        ws, self.options['executable'],
    #        self.options['bin-directory'], extra_paths = extra_paths,
    #        #arguments= "'%s.%s'" % (self.options["project"],
    #        #    self.options['settings'])
