@@ -83,9 +83,10 @@ class Recipe(object):
               - default.py
               - dev.py
         """
-        base_dir    = self.buildout['buildout']['directory']
+        base_dir = self.buildout['buildout']['directory']
         project_dir = os.path.join(base_dir, self.options['project'])
-        bin_path    = os.path.join(base_dir, '.duke/bin/')
+        bin_path = os.path.join(base_dir, '.duke/bin/')
+        tmp_path = os.path.join('/tmp/', self.options['project'])
 
         if os.path.exists(project_dir):
             logger.info('Skipping creating of project: %(project)s '
@@ -96,6 +97,7 @@ class Recipe(object):
             logger.info('Creating project: %s ' % self.options['project'])
             logger.info(self.options['extra-paths'])
 
+
             if self.options.get('template'):
                 options = '--template=%s --extension=py,rst' % self.options['template']
             else:
@@ -104,8 +106,14 @@ class Recipe(object):
             # Lazy fix for weird file permission problem..
             self.command('chmod a+x '+ os.path.join(bin_path, 'django'))
 
+            django_admin = None
+            for d in os.listdir(self.buildout['buildout']['eggs-directory']):
+                p = os.path.join(self.buildout['buildout']['eggs-directory'], d)
+                if d.startswith('Django') and os.path.exists(os.path.join(p, 'django/bin/django-admin.py')):
+                    django_admin = os.path.join(p, 'django/bin/django-admin.py')
+
             self.command('%(django)s startproject %(options)s %(project)s %(dest)s' % {
-                'django': os.path.join(bin_path, 'django'),
+                'django': django_admin or os.path.join(bin_path, 'django'),
                 'project': self.options['project'],
                 'options': options,
                 'dest': base_dir,
