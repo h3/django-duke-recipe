@@ -99,7 +99,7 @@ class Recipe(object):
 
 
             if self.options.get('template'):
-                options = '--template=%s --extension=py,rst' % self.options['template']
+                options = '--template=%s --extension=py,rst,md,default' % self.options['template']
             else:
                 options = ''
 
